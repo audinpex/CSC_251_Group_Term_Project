@@ -16,7 +16,7 @@ import java.sql.SQLException;
 	    }
 	    public static Connection getConnection() {
 	        try {
-	    		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/carLot", "scott", "tiger");
+	    		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/car_dealership", "scott", "tiger");
 	            return conn;
 	        } catch (SQLException e) {
 	            return null;
