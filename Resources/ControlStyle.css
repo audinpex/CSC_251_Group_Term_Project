@@ -1,0 +1,28 @@
+
+.toggle-button{
+    -fx-text-fill: white;
+    -fx-background-color: #333;
+    -fx-min-height: 60 ;
+    -fx-min-width: 200;
+    -fx-font-weight: bold;
+    -fx-background-radius: 100;
+}
+
+.toggle-button:hover {
+    -fx-background-color: #999;
+}
+
+.toggle-button:pressed {
+    -fx-background-color: #003b5c;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #003b5c;
+}
+
+.toggle-box{
+    -fx-background-color: #333;
+    -fx-min-height: 60 ;
+    -fx-min-width: 400;
+    -fx-background-radius: 100;
+}
