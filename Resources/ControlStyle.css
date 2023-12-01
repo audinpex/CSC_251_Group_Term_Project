@@ -1,8 +1,15 @@
+.stat-card{
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
 
 .toggle-button{
     -fx-text-fill: white;
     -fx-background-color: #333;
-    -fx-min-height: 60 ;
+    -fx-min-height: 58;
+    -fx-border-radius:1;
     -fx-min-width: 200;
     -fx-font-weight: bold;
     -fx-background-radius: 100;
@@ -18,6 +25,12 @@
 
 .toggle-button:selected {
     -fx-background-color: #003b5c;
+}
+
+.toggle-button:disabled {
+    -fx-text-fill: white;
+    -fx-background-color: #003b5c;
+    -fx-opacity: 1;
 }
 
 .toggle-box{

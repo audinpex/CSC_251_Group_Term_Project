@@ -3,22 +3,15 @@ package csc251.team.project;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.Group;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-
 
 public class CarLotFx extends Application {
 
@@ -112,6 +105,54 @@ public class CarLotFx extends Application {
         return inventoryIcon;
     }
 
+    private Shape gasIcon(){
+        SVGPath gasIcon = new SVGPath();
+        gasIcon.setContent("M 160 -120 v -640 q 0 -33 23.5 -56.5 T 240 -840 h 240 q 33 0 56.5 23.5 T 560 -760" +
+                " v 280 h 40 q 33 0 56.5 23.5 T 680 -400 v 180 q 0 17 11.5 28.5 T 720 -180 q 17 0 28.5 -11.5 T " +
+                "760 -220 v -288 q -9 5 -19 6.5 t -21 1.5 q -42 0 -71 -29 t -29 -71 q 0 -32 17.5 -57.5 T 684 -694 " +
+                "l -84 -84 l 42 -42 l 148 144 q 15 15 22.5 35 t 7.5 41 v 380 q 0 42 -29 71 t -71 29 q -42 0 -71 -29 " +
+                "t -29 -71 v -200 h -60 v 300 H 160 Z m 80 -440 h 240 v -200 H 240 v 200 Z m 480 0 q 17 0 28.5 -11.5 " +
+                "T 760 -600 q 0 -17 -11.5 -28.5 T 720 -640 q -17 0 -28.5 11.5 T 680 -600 q 0 17 11.5 28.5 T 720 -560 " +
+                "Z M 240 -200 h 240 v -280 H 240 v 280 Z m 240 0 H 240 h 240 Z");
+        gasIcon.setFill(Color.web("#003b5c"));
+        gasIcon.setScaleX(0.1);
+        gasIcon.setScaleY(0.1);
+
+        return gasIcon;
+    }
+
+    private Shape distanceIcon(){
+        SVGPath distanceIcon = new SVGPath();
+        distanceIcon.setContent("M120-240q-33 0-56.5-23.5T40-320q0-33 23.5-56.5T120-400h10.5q4.5 0 9.5 " +
+                "2l182-182q-2-5-2-9.5V-600q0-33 23.5-56.5T400-680q33 0 56.5 23.5T480-600q0 2-2 20l102 102q5-2 " +
+                "9.5-2h21q4.5 0 9.5 2l142-142q-2-5-2-9.5V-640q0-33 23.5-56.5T840-720q33 0 56.5 23.5T920-640q0 " +
+                "33-23.5 56.5T840-560h-10.5q-4.5 0-9.5-2L678-420q2 5 2 9.5v10.5q0 33-23.5 56.5T600-320q-33 " +
+                "0-56.5-23.5T520-400v-10.5q0-4.5 2-9.5L420-522q-5 2-9.5 2H400q-2 0-20-2L198-340q2 5 2 9.5v10.5q0 " +
+                "33-23.5 56.5T120-240Z");
+        distanceIcon.setFill(Color.web("#003b5c"));
+        distanceIcon.setScaleX(0.1);
+        distanceIcon.setScaleY(0.1);
+
+
+        return distanceIcon;
+    }
+
+    private Shape savingsIcon(){
+        SVGPath savingsIcon = new SVGPath();
+        savingsIcon.setContent("M640-520q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 " +
+                "17 11.5 28.5T640-520Zm-320-80h200v-80H320v80ZM180-120q-34-114-67-227.5T80-580q0-92 " +
+                "64-156t156-64h200q29-38 70.5-59t89.5-21q25 0 42.5 17.5T720-820q0 6-1.5 12t-3.5 11q-4 " +
+                "11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Zm60-80h80v-80h240v80h80l62-206 " +
+                "98-33v-141h-40L620-720q0-20 2.5-38.5T630-796q-29 8-51 27.5T547-720H300q-58 0-99 41t-41 99q0 98 27 " +
+                "191.5T240-200Zm240-298Z");
+        savingsIcon.setFill(Color.web("#003b5c"));
+        savingsIcon.setScaleX(0.1);
+        savingsIcon.setScaleY(0.1);
+
+        return savingsIcon;
+
+    }
+
     //Objects
     //Template for button creation which attempts to follow material 3 standards.
     private Button materialButton(String str){
@@ -143,6 +184,45 @@ public class CarLotFx extends Application {
         card.getChildren().addAll(icon, cardTitle);
 
         return card;
+    }
+    //Creates card for best section.
+    //(String str, Shape Icon)
+    private StackPane bestCard(String str, Shape icon){
+        //Style the Stack Pane which will hold an vbox for text and image.
+        StackPane card = new StackPane();
+        card.setAlignment(Pos.CENTER);
+        card.setPadding(new Insets(10));
+        card.setMaxSize(200, 350);
+        card.setMinSize(200, 350);
+        card.getStylesheets().add("/Resources/ControlStyle.css");
+        card.getStyleClass().add("stat-card");
+
+        //Set image VBox attributes.
+        VBox imageVBox = new VBox();
+        imageVBox.setAlignment(Pos.CENTER);
+        Group imageGroup = new Group();
+        imageGroup.getChildren().add(icon);
+        imageGroup.setTranslateY(-100);
+        imageVBox.getChildren().add(imageGroup);
+
+        //Set text Vbox attributes.
+        VBox textVBox = new VBox();
+        textVBox.setAlignment(Pos.CENTER);
+        Font cardFont = Font.font("San Francisco", FontWeight.EXTRA_BOLD, 24);
+        Label titleLabel = new Label(str);
+        titleLabel.setFont(cardFont);
+        Shape line = new Line();
+        line.setStroke(Color.web("#333"));
+        line.setStrokeLineCap(StrokeLineCap.SQUARE);
+        line.setScaleX(160);
+        textVBox.getChildren().addAll(titleLabel, line);
+        textVBox.setSpacing(10);
+
+        //Add the text and image vboxes to  the stack pane
+        card.getChildren().addAll(textVBox, imageVBox);
+
+        return card;
+
     }
 
     //Creates and styles the navigation menu object.
@@ -189,7 +269,7 @@ public class CarLotFx extends Application {
     //Creates the compare screen.
     private void compareBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu ){
         BorderPane compareBorderPane = new BorderPane();
-        compareBorderPane.setStyle("-fx-background-color: white;");
+        compareBorderPane.setStyle("-fx-background-color: whitesmoke;");
         compareBorderPane.setMinSize(800, 600);
         Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
         compareBorderPane.getChildren().add(navigationIcon);
@@ -209,13 +289,35 @@ public class CarLotFx extends Application {
         compareBorderPane.setBottom(compareToggleBox);
         BorderPane.setAlignment(compareToggleBox, Pos.BASELINE_CENTER);
 
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(40);
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setMaxSize(700, 400);
+        StackPane bestMPGCard = bestCard("Best MPG", gasIcon());
+        StackPane minCostCard = bestCard("Most Affordable", savingsIcon());
+        StackPane minMilesCard = bestCard("Least Miles", distanceIcon());
+        gridPane.add(bestMPGCard, 0, 0);
+        gridPane.add(minCostCard, 1, 0);
+        gridPane.add(minMilesCard, 2, 0 );
+        bestStatsButton.setOnMouseClicked( e -> {
+            compareBorderPane.setCenter(gridPane);
+            bestStatsButton.setDisable(true);
+            head2headButton.setDisable(false);
+        });
+
+        head2headButton.setOnMouseClicked( e -> {
+            head2headButton.setDisable(true);
+            bestStatsButton.setDisable(false);
+        });
+
+
 
     }
 
     //Creates the compare inventory screen.
     private void inventoryBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu ){
         BorderPane borderPane = new BorderPane();
-        borderPane.setStyle("-fx-background-color: white;");
+        borderPane.setStyle("-fx-background-color: whitesmoke;");
         borderPane.setMinSize(800, 600);
         Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
         borderPane.getChildren().add(navigationIcon);
@@ -240,7 +342,7 @@ public class CarLotFx extends Application {
     //Creates the history screen.
     private void historyBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu ){
         BorderPane borderPane = new BorderPane();
-        borderPane.setStyle("-fx-background-color: white;");
+        borderPane.setStyle("-fx-background-color: whitesmoke;");
         borderPane.setMinSize(800, 600);
         Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
         borderPane.getChildren().add(navigationIcon);
@@ -265,7 +367,7 @@ public class CarLotFx extends Application {
     //Creates the sell screen.
     private void sellBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu){
         VBox sellVBox = new VBox();
-        sellVBox.setStyle("-fx-background-color: white;");
+        sellVBox.setStyle("-fx-background-color: whitesmoke;");
         sellVBox.setMinSize(800, 600);
         Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
         sellVBox.getChildren().add(navigationIcon);
@@ -280,7 +382,7 @@ public class CarLotFx extends Application {
     private BorderPane toggleBox(ToggleButton... buttons){
         //Create Border Pane for button
         BorderPane toggleButtonBox= new BorderPane();
-        toggleButtonBox.getStylesheets().add("Resources/ControlStyle.css");
+        toggleButtonBox.getStylesheets().add("/Resources/ControlStyle.css");
         toggleButtonBox.getStyleClass().add("toggle-box");
         buttons[0].getStyleClass().add("toggle-button");
         buttons[1].getStyleClass().add("toggle-button");
@@ -369,7 +471,7 @@ public class CarLotFx extends Application {
         StackPane.setAlignment(navigationMenu, Pos.BASELINE_LEFT);
         StackPane.setAlignment(hamburgerIcon,Pos.TOP_LEFT);
 
-        //Create snd show the primary scene.
+        //Create and show the primary scene.
         primaryStage.setTitle("Car Lot Application - Team #3");
         Scene primaryScene = new Scene(root, 800,600);
         primaryStage.setScene(primaryScene);
