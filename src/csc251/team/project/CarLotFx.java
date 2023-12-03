@@ -19,34 +19,44 @@ public class CarLotFx extends Application {
     //Creates a hamburger icon for navigation.
     private Shape hamburgerIcon(VBox navigationMenu){
         SVGPath hamburgerIcon = new SVGPath();
-        hamburgerIcon.setContent("M6.551,12.607H22.263a1.746,1.746,0,0,0,0-3.491H6.551a1.746," +
-                "1.746,0,1,0,0,3.491ZM22.263,16.1H6.551a1.746,1.746,0,0,0,0,3.493H22.263a1.746,1.746," +
-                "0,0,0,0-3.493Zm0,6.984H6.551a1.746,1.746,0,1,0,0,3.491H22.263a1.746,1.746,0,0,0,0-3.491Z");
+        hamburgerIcon.setContent("M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z");
         hamburgerIcon.setFill(Color.web("#00b5e2"));
-        hamburgerIcon.setTranslateX(15);
-        hamburgerIcon.setTranslateY(10);
+        hamburgerIcon.setScaleX(0.05);
+        hamburgerIcon.setScaleY(0.05);
 
         //Define hamburger icon behaviour
         hamburgerIcon.setOnMouseClicked( e -> navigationMenu.setVisible(!navigationMenu.isVisible()));
+        hamburgerIcon.setOnMouseEntered( e -> hamburgerIcon.setFill(Color.web("#003351")));
+        hamburgerIcon.setOnMouseExited( e -> hamburgerIcon.setFill(Color.web("#00b5e2")));
 
         return hamburgerIcon;
     }
 
+    private Shape homeIcon(AnchorPane root){
+        SVGPath homeIcon = new SVGPath();
+        homeIcon.setContent("M 240 -200 h 120 v -240 h 240 v 240 h 120 v -360 L 480 -740 L 240 " +
+                "-560 v 360 Z m -80 80 v -480 l 320 -240 l 320 240 v 480 H 520 v -240 h -80 v 240 H " +
+                "160 Z m 320 -350 Z");
+        homeIcon.setFill(Color.web("#333"));
+        homeIcon.setScaleX(0.05);
+        homeIcon.setScaleY(0.05);
+        homeIcon.setOnMouseEntered( e -> { homeIcon.setFill(Color.web("#999"));} );
+        homeIcon.setOnMouseExited( e -> { homeIcon.setFill(Color.web("#333")); } );
+        homeIcon.setOnMouseClicked( e -> { returnHome(root); root.toBack();});
+
+        return homeIcon;
+    }
+
     //Creates a backward facing arrow image which returns the user to the home pane.
-    private Shape navigationIcon(StackPane root, VBox navigationMenu, Shape hamburger ){
+    private Shape navigationIcon(AnchorPane root, BorderPane borderPane){
         SVGPath navigationIcon = new SVGPath();
-        navigationIcon.setContent("M 13.5 19.689 a 0.813 0.813 0 0 1 -0.5 -0.752 v -3.25 H 8.125 A 1.625 1.625 0 " +
-                "0 1 6.5 14.063 V 12.438 a 1.625 1.625 0 0 1 1.625 -1.625 H 13 V 7.563 a 0.812 0.812 0 0 1 1.387 " +
-                "-0.574 l 5.688 5.687 a 0.812 0.812 0 0 1 0 1.149 l -5.688 5.687 A 0.808 0.808 0 0 1 13.5 19.689 Z");
+        navigationIcon.setContent("m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z");
         navigationIcon.setFill(Color.web("#333"));
-        navigationIcon.setScaleX(-1.5);
-        navigationIcon.setScaleY(1.5);
-        navigationIcon.setTranslateX(762);
-        navigationIcon.setTranslateY(14);
+        navigationIcon.setScaleX(0.05);
+        navigationIcon.setScaleY(0.05);
         navigationIcon.setOnMouseEntered( e -> { navigationIcon.setFill(Color.web("#999"));} );
         navigationIcon.setOnMouseExited( e -> { navigationIcon.setFill(Color.web("#333")); } );
-        navigationIcon.setOnMouseClicked( e -> { resetToHome(root); addNodes(root, hamburger,
-                navigationMenu); } );
+        navigationIcon.setOnMouseClicked( e -> { root.getChildren().remove(borderPane); } );
 
         return navigationIcon;
     }
@@ -58,7 +68,7 @@ public class CarLotFx extends Application {
                 "3 S 3 5.91 3 9.5 S 5.91 16 9.5 16 c 1.61 0 3.09 -0.59 4.23 -1.57 l 0.27 0.28 v 0.79 l 5 4.99 L " +
                 "20.49 19 l -4.99 -5 Z m -6 0 C 7.01 14 5 11.99 5 9.5 S 7.01 5 9.5 5 S 14 7.01 14 9.5 S 11.99 14 " +
                 "9.5 14 Z");
-        searchIcon.setFill(Color.web("#003b5c"));
+        searchIcon.setFill(Color.web("#003351"));
         searchIcon.setScaleX(5.0);
         searchIcon.setScaleY(5.0);
 
@@ -72,7 +82,7 @@ public class CarLotFx extends Application {
                 "7.17 c 0 0.53 0.21 1.04 0.59 1.41 l 8.83 8.83 c 0.78 0.78 2.05 0.78 2.83 0 l 7.17 -7.17 C 22.2 " +
                 "13.46 22.2 12.2 21.41 11.41 Z M 6.5 8 C 5.67 8 5 7.33 5 6.5 S 5.67 5 6.5 5 S 8 5.67 8 6.5 S 7.33 " +
                 "8 6.5 8 Z");
-        sellIcon.setFill(Color.web("#003b5c"));
+        sellIcon.setFill(Color.web("#003351"));
         sellIcon.setScaleX(4.0);
         sellIcon.setScaleY(4.0);
 
@@ -86,23 +96,21 @@ public class CarLotFx extends Application {
                 "3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C" +
                 " 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 Z m -1 5 v 5 l 4.28 " +
                 "2.54 l 0.72 -1.21 l -3.5 -2.08 V 8 H 12 Z");
-        historyIcon.setFill(Color.web("#003b5c"));
+        historyIcon.setFill(Color.web("#003351"));
         historyIcon.setScaleX(4.5);
         historyIcon.setScaleY(4.5);
 
         return historyIcon;
     }
 
-    private Shape inventoryIcon(){
-        SVGPath inventoryIcon = new SVGPath();
-        inventoryIcon.setContent("M 20 2 H 4 c -1 0 -2 0.9 -2 2 v 3.01 c 0 0.72 0.43 1.34 1 1.69 V 20 c 0 1.1 " +
-                "1.1 2 2 2 h 14 c 0.9 0 2 -0.9 2 -2 V 8.7 c 0.57 -0.35 1 -0.97 1 -1.69 V 4 c 0 -1.1 -1 -2 -2 " +
-                "-2 Z m -5 12 H 9 v -2 h 6 v 2 Z m 5 -7 H 4 V 4 l 16 -0.02 V 7 Z");
-        inventoryIcon.setFill(Color.web("#003b5c"));
-        inventoryIcon.setScaleX(4.0);
-        inventoryIcon.setScaleY(4.0);
+    private Shape comparisonIcon(){
+        SVGPath comparisonIcon = new SVGPath();
+        comparisonIcon.setContent("M9.01,14H2v2h7.01v3L13,15l-3.99-4V14z M14.99,13v-3H22V8h-7.01V5L11,9L14.99,13z");
+        comparisonIcon.setFill(Color.web("#003351"));
+        comparisonIcon.setScaleX(5.0);
+        comparisonIcon.setScaleY(5.0);
 
-        return inventoryIcon;
+        return comparisonIcon;
     }
 
     private Shape gasIcon(){
@@ -129,7 +137,7 @@ public class CarLotFx extends Application {
                 "33-23.5 56.5T840-560h-10.5q-4.5 0-9.5-2L678-420q2 5 2 9.5v10.5q0 33-23.5 56.5T600-320q-33 " +
                 "0-56.5-23.5T520-400v-10.5q0-4.5 2-9.5L420-522q-5 2-9.5 2H400q-2 0-20-2L198-340q2 5 2 9.5v10.5q0 " +
                 "33-23.5 56.5T120-240Z");
-        distanceIcon.setFill(Color.web("#003b5c"));
+        distanceIcon.setFill(Color.web("#003351"));
         distanceIcon.setScaleX(0.1);
         distanceIcon.setScaleY(0.1);
 
@@ -145,7 +153,7 @@ public class CarLotFx extends Application {
                 "11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Zm60-80h80v-80h240v80h80l62-206 " +
                 "98-33v-141h-40L620-720q0-20 2.5-38.5T630-796q-29 8-51 27.5T547-720H300q-58 0-99 41t-41 99q0 98 27 " +
                 "191.5T240-200Zm240-298Z");
-        savingsIcon.setFill(Color.web("#003b5c"));
+        savingsIcon.setFill(Color.web("#003351"));
         savingsIcon.setScaleX(0.1);
         savingsIcon.setScaleY(0.1);
 
@@ -157,36 +165,33 @@ public class CarLotFx extends Application {
     //Template for button creation which attempts to follow material 3 standards.
     private Button materialButton(String str){
         Button button = new Button(" ".repeat(4).concat(str));
-        String defaultButtonStyle = "-fx-text-fill: white ; -fx-background-color: #333; -fx-min-height: 40; " +
-                " -fx-min-width: 180; -fx-font-weight: bold;  -fx-background-radius: 30;";
-        String hoverButtonStyle = defaultButtonStyle.replace("333", "999");
-        button.setStyle(defaultButtonStyle);
+        button.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        button.getStyleClass().add("button");
         button.setAlignment(Pos.BASELINE_LEFT);
-        button.setOnMouseEntered(e -> button.setStyle(hoverButtonStyle));
-        button.setOnMouseExited(e -> button.setStyle(defaultButtonStyle));
 
         return button;
     }
 
     //Template for creating cards.
-    private VBox card(String str, Shape icon){
-        VBox card = new VBox();
-        card.setStyle("-fx-background-color: #ffffff; -fx-border-color: #cccccc; " +
-                " -fx-background-radius: 5; -fx-border-radius: 5;");
-        card.setMinWidth(250);
-        card.setMinHeight(180);
-        card.setAlignment(Pos.BOTTOM_CENTER);
-        card.setSpacing(50);
-        card.setPadding(new Insets(10));
-        Font cardFont = Font.font("San Francisco", FontWeight.EXTRA_BOLD, 20);
+    private VBox menuCard(String str, Shape icon){
+        VBox menuCard = new VBox();
+        menuCard.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        menuCard.getStyleClass().add("menu-card");
+        menuCard.setMinWidth(250);
+        menuCard.setMinHeight(180);
+        menuCard.setSpacing(30);
+        menuCard.setPadding(new Insets(10));
+        Font cardFont = Font.font("San Francisco", FontWeight.EXTRA_BOLD, 24);
+        Group image = new Group(icon);
         Label cardTitle = new Label(str);
         cardTitle.setFont(cardFont);
-        card.getChildren().addAll(icon, cardTitle);
+        menuCard.getChildren().addAll(image, cardTitle);
+        menuCard.setAlignment(Pos.BOTTOM_CENTER);
 
-        return card;
+        return menuCard ;
     }
+
     //Creates card for best section.
-    //(String str, Shape Icon)
     private StackPane bestCard(String str, Shape icon){
         //Style the Stack Pane which will hold an vbox for text and image.
         StackPane card = new StackPane();
@@ -225,159 +230,35 @@ public class CarLotFx extends Application {
 
     }
 
-    //Creates and styles the navigation menu object.
-    private VBox navigationMenu(StackPane root){
-        VBox navigationMenu = new VBox();
-        navigationMenu.setStyle("-fx-background-color: #333; -fx-background-radius: 10;");
-        navigationMenu.setVisible(false);
-        navigationMenu.setPrefWidth(200);
-        navigationMenu.setMaxWidth(200);
-        navigationMenu.setAlignment(Pos.BASELINE_CENTER);
+    private HBox controlsHBox(AnchorPane root, BorderPane borderPane){
+        HBox controlsHBox = new HBox();
+        controlsHBox.setMinSize(150, 100);
+        controlsHBox.setMaxSize(150, 100);
+        controlsHBox.setSpacing(30);
+        Shape navigationIcon = navigationIcon(root, borderPane);
+        Shape homeIcon = homeIcon(root);
+        Group navigationGroup = new Group();
+        navigationGroup.getChildren().add(navigationIcon);
+        Group homeGroup =  new Group();
+        homeGroup.getChildren().add(homeIcon);
+        controlsHBox.getChildren().addAll(navigationGroup, homeGroup);
+        controlsHBox.setAlignment(Pos.CENTER_LEFT);
+        controlsHBox.setTranslateY(-2);
+        controlsHBox.setTranslateX(10);
 
-        //Create and style nodes for the navigation menu
-        Label navigationHeader = new Label();
-        Label navigationHeader2 = new Label();
-        Button compareButton = materialButton("Compare");
-        Button historyButton = materialButton("History");
-        Button inventoryButton = materialButton("Inventory");
-        Button sellButton = materialButton("Sell");
-
-        //Adds nodes to navigation object.
-        navigationMenu.getChildren().addAll(navigationHeader,navigationHeader2, sellButton,
-                inventoryButton, compareButton, historyButton);
-
-        compareButton.setOnMouseClicked(e -> handleButtonClick("Compare", root, navigationMenu));
-        historyButton.setOnMouseClicked(e -> handleButtonClick("History", root, navigationMenu));
-        inventoryButton.setOnMouseClicked(e -> handleButtonClick("Inventory", root, navigationMenu));
-        sellButton.setOnMouseClicked(e -> handleButtonClick("Sell", root, navigationMenu));
-
-
-        return navigationMenu;
+        return controlsHBox;
     }
 
-    //Defines button click behaviour
-    private void handleButtonClick(String str, StackPane root, VBox navigationMenu){
-        Shape hamburgerIcon = hamburgerIcon(navigationMenu);
-        switch (str) {
-            case "Compare" -> compareBorderPane(root, hamburgerIcon, navigationMenu);
-            case "History" -> historyBorderPane(root, hamburgerIcon, navigationMenu);
-            case "Inventory" -> inventoryBorderPane(root, hamburgerIcon, navigationMenu);
-            case "Sell" -> sellBorderPane(root, hamburgerIcon, navigationMenu);
-        }
+    private ComboBox<String> comboBoxTemplate( ){
+        final ComboBox<String> comboBox = new ComboBox<String>();
+        comboBox.setMinSize(180, 40);
+        comboBox.setMaxSize(180, 40);
+        comboBox.setEditable(true);
+        comboBox.getStylesheets().add("/Resources/ControlStyle.css");
+        comboBox.getStyleClass().add("combo-box");
+
+        return comboBox;
     }
-
-    //Creates the compare screen.
-    private void compareBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu ){
-        BorderPane compareBorderPane = new BorderPane();
-        compareBorderPane.setStyle("-fx-background-color: whitesmoke;");
-        compareBorderPane.setMinSize(800, 600);
-        Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
-        compareBorderPane.getChildren().add(navigationIcon);
-        root.getChildren().removeAll(hamburgerIcon, navigationMenu);
-        root.getChildren().addAll(compareBorderPane,navigationMenu, hamburgerIcon);
-        StackPane.setAlignment(navigationMenu, Pos.BASELINE_LEFT);
-        StackPane.setAlignment(hamburgerIcon,Pos.TOP_LEFT);
-        sortNodes(hamburgerIcon, navigationMenu);
-
-        ToggleGroup compareToggleGroup = new ToggleGroup();
-        ToggleButton head2headButton = new ToggleButton("Head to Head");
-        ToggleButton bestStatsButton = new ToggleButton("Best Stats");
-        head2headButton.setToggleGroup(compareToggleGroup);
-        bestStatsButton.setToggleGroup(compareToggleGroup);
-        compareToggleGroup.selectToggle(head2headButton);
-        BorderPane compareToggleBox = toggleBox(head2headButton, bestStatsButton);
-        compareBorderPane.setBottom(compareToggleBox);
-        BorderPane.setAlignment(compareToggleBox, Pos.BASELINE_CENTER);
-
-        GridPane gridPane = new GridPane();
-        gridPane.setHgap(40);
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setMaxSize(700, 400);
-        StackPane bestMPGCard = bestCard("Best MPG", gasIcon());
-        StackPane minCostCard = bestCard("Most Affordable", savingsIcon());
-        StackPane minMilesCard = bestCard("Least Miles", distanceIcon());
-        gridPane.add(bestMPGCard, 0, 0);
-        gridPane.add(minCostCard, 1, 0);
-        gridPane.add(minMilesCard, 2, 0 );
-        bestStatsButton.setOnMouseClicked( e -> {
-            compareBorderPane.setCenter(gridPane);
-            bestStatsButton.setDisable(true);
-            head2headButton.setDisable(false);
-        });
-
-        head2headButton.setOnMouseClicked( e -> {
-            head2headButton.setDisable(true);
-            bestStatsButton.setDisable(false);
-        });
-
-
-
-    }
-
-    //Creates the compare inventory screen.
-    private void inventoryBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu ){
-        BorderPane borderPane = new BorderPane();
-        borderPane.setStyle("-fx-background-color: whitesmoke;");
-        borderPane.setMinSize(800, 600);
-        Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
-        borderPane.getChildren().add(navigationIcon);
-        root.getChildren().removeAll(hamburgerIcon,navigationMenu);
-        root.getChildren().addAll(borderPane, navigationMenu, hamburgerIcon);
-        StackPane.setAlignment(navigationMenu, Pos.BASELINE_LEFT);
-        StackPane.setAlignment(hamburgerIcon,Pos.TOP_LEFT);
-        sortNodes(hamburgerIcon, navigationMenu);
-
-        ToggleGroup inventoryToggleGroup = new ToggleGroup();
-        ToggleButton listOptionButton = new ToggleButton("List");
-        ToggleButton editOptionButton = new ToggleButton("Edit");
-        listOptionButton.setToggleGroup(inventoryToggleGroup);
-        editOptionButton.setToggleGroup(inventoryToggleGroup);
-        inventoryToggleGroup.selectToggle(listOptionButton);
-        BorderPane inventoryToggleBox = toggleBox(listOptionButton,editOptionButton);
-        borderPane.setBottom(inventoryToggleBox);
-        BorderPane.setAlignment(inventoryToggleBox, Pos.BASELINE_CENTER);
-
-    }
-
-    //Creates the history screen.
-    private void historyBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu ){
-        BorderPane borderPane = new BorderPane();
-        borderPane.setStyle("-fx-background-color: whitesmoke;");
-        borderPane.setMinSize(800, 600);
-        Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
-        borderPane.getChildren().add(navigationIcon);
-        root.getChildren().removeAll(hamburgerIcon, navigationMenu);
-        root.getChildren().addAll(borderPane, navigationMenu, hamburgerIcon);
-        StackPane.setAlignment(navigationMenu, Pos.BASELINE_LEFT);
-        StackPane.setAlignment(hamburgerIcon,Pos.TOP_LEFT);
-        sortNodes(hamburgerIcon, navigationMenu);
-
-        ToggleGroup historyToggleGroup = new ToggleGroup();
-        ToggleButton pastTransactionsButton = new ToggleButton("Past Transactions");
-        ToggleButton profitTrackerButton = new ToggleButton("Profit Tracker");
-        pastTransactionsButton.setToggleGroup(historyToggleGroup);
-        profitTrackerButton.setToggleGroup(historyToggleGroup);
-        historyToggleGroup.selectToggle(pastTransactionsButton);
-        BorderPane historyToggleBox = toggleBox(pastTransactionsButton, profitTrackerButton);
-        borderPane.setBottom(historyToggleBox);
-        BorderPane.setAlignment(historyToggleBox, Pos.BASELINE_CENTER);
-
-    }
-
-    //Creates the sell screen.
-    private void sellBorderPane(StackPane root, Shape hamburgerIcon, VBox navigationMenu){
-        VBox sellVBox = new VBox();
-        sellVBox.setStyle("-fx-background-color: whitesmoke;");
-        sellVBox.setMinSize(800, 600);
-        Shape navigationIcon = navigationIcon(root, navigationMenu, hamburgerIcon);
-        sellVBox.getChildren().add(navigationIcon);
-        root.getChildren().removeAll(hamburgerIcon, navigationMenu);
-        root.getChildren().addAll(sellVBox, navigationMenu, hamburgerIcon);
-        StackPane.setAlignment(navigationMenu, Pos.BASELINE_LEFT);
-        StackPane.setAlignment(hamburgerIcon,Pos.TOP_LEFT);
-        sortNodes(hamburgerIcon, navigationMenu);
-    }
-
 
     private BorderPane toggleBox(ToggleButton... buttons){
         //Create Border Pane for button
@@ -390,49 +271,228 @@ public class CarLotFx extends Application {
         toggleButtonBox.setLeft(buttons[0]);
         toggleButtonBox.setCenter(null);
         toggleButtonBox.setRight(buttons[1]);
-        toggleButtonBox.setMinHeight(60);
-        toggleButtonBox.setMaxWidth(400);
+        toggleButtonBox.setMinSize(60, 400);
+        toggleButtonBox.setMaxSize(60, 400);
         BorderPane.setAlignment(buttons[0], Pos.CENTER);
         BorderPane.setAlignment(buttons[1], Pos.CENTER);
 
         return toggleButtonBox;
     }
 
-
-    //Recursively deletes nodes from root until only the home pane node exists.
-    private void resetToHome(StackPane root){
-        if ( root.getChildren().size() > 1 ){
-            root.getChildren().remove(root.getChildren().size() - 1);
-            resetToHome(root);
+    private void returnHome(AnchorPane root) {
+        int childNodes = root.getChildren().size();
+        if (childNodes > 2) {
+            for (int i = childNodes; i > 2; i--) {
+                root.getChildren().remove(1);
+            }
         }
     }
 
-    //Brings the navigation menu and the hamburger icon to the forefront when loading a new Vbox.
-    private void sortNodes(Shape hamburger, VBox navigationMenu){
-        navigationMenu.toFront();
-        hamburger.toFront();
+    //Creates the compare screen.
+    private void compareBorderPane(AnchorPane root){
+        //Create Border Pane.
+        BorderPane compareBorderPane = new BorderPane();
+        compareBorderPane.setStyle("-fx-background-color: whitesmoke");
+        compareBorderPane.setMinSize(800, 600);
+        compareBorderPane.setMaxSize(800, 600);
+
+        //Create HBox that will be placed at the top of the Pane.
+        HBox topHBox = new HBox();
+        topHBox.setMinSize(800, 100);
+        topHBox.setMaxSize(800, 100);
+
+        //Child HBox to add Padding to HBox.
+        HBox leftPaddingHBox = new HBox();
+        leftPaddingHBox.setMinSize(150, 100);
+        leftPaddingHBox.setMaxSize(150, 100);
+
+        //Combo button HBox holder. Child to topHBox
+        HBox combobuttonHBox = new HBox();
+        combobuttonHBox.setMinSize(500, 100);
+        combobuttonHBox.setMaxSize(500, 100);
+        combobuttonHBox.setSpacing(80);
+        combobuttonHBox.getStylesheets().add("/Resources/ControlStyle.css");
+       
+        //Create Combo Buttons
+        ComboBox<String> firstComboBox = comboBoxTemplate();
+        ComboBox<String> secondComboBox = comboBoxTemplate();
+        
+        combobuttonHBox.getChildren().addAll(firstComboBox, secondComboBox);
+        combobuttonHBox.setAlignment(Pos.CENTER);
+
+        //HBox for the controls. Added last to topHBox.
+        HBox controlsHBox = controlsHBox(root, compareBorderPane);
+        topHBox.getChildren().addAll(leftPaddingHBox,combobuttonHBox, controlsHBox);
+        compareBorderPane.setTop(topHBox);
+
+
+        //Creates the HBox that will be assigned to the bottom.
+        HBox bottomHBox = new HBox();
+        bottomHBox.setMinSize(800, 100);
+        bottomHBox.setMaxSize(800, 100);
+
+
+        ToggleGroup compareToggleGroup = new ToggleGroup();
+        ToggleButton head2headButton = new ToggleButton("Head to Head");
+        ToggleButton bestStatsButton = new ToggleButton("Best Stats");
+        head2headButton.setToggleGroup(compareToggleGroup);
+        bestStatsButton.setToggleGroup(compareToggleGroup);
+        compareToggleGroup.selectToggle(head2headButton);
+        BorderPane compareToggleBox = toggleBox(head2headButton, bestStatsButton);
+        bottomHBox.getChildren().add(compareToggleBox);
+        bottomHBox.setAlignment(Pos.BASELINE_CENTER);
+        bottomHBox.setTranslateY(21);
+        compareBorderPane.setBottom(bottomHBox);
+        root.getChildren().add(compareBorderPane);
+
+        //Create Cards for grid pane
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(40);
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setMaxSize(700, 400);
+        StackPane bestMPGCard = bestCard("Best MPG", gasIcon());
+        StackPane minCostCard = bestCard("Most Affordable", savingsIcon());
+        StackPane minMilesCard = bestCard("Least Miles", distanceIcon());
+        gridPane.add(bestMPGCard, 0, 0);
+        gridPane.add(minCostCard, 1, 0);
+        gridPane.add(minMilesCard, 2, 0 );
+
+        //Create Cards for grid pane
+        bestStatsButton.setOnMouseClicked( e -> {
+            compareBorderPane.setCenter(gridPane);
+            combobuttonHBox.setVisible(false);
+            bestStatsButton.setDisable(true);
+            head2headButton.setDisable(false);
+        });
+
+        head2headButton.setOnMouseClicked( e -> {
+            combobuttonHBox.setVisible(true);
+            gridPane.setVisible(false);
+            head2headButton.setDisable(true);
+            bestStatsButton.setDisable(false);
+        });
+
+
+
     }
 
-    //Add nodes to root when resetting to home pane.
-    private void addNodes(StackPane root, Shape hamburgerIcon, VBox navigationMenu){
-        root.getChildren().addAll(navigationMenu, hamburgerIcon);
-        StackPane.setAlignment(navigationMenu, Pos.BASELINE_LEFT);
-        StackPane.setAlignment(hamburgerIcon,Pos.TOP_LEFT);
+    //Creates the compare inventory screen.
+    private void inventoryBorderPane(AnchorPane root){
+        BorderPane inventoryBorderPane = new BorderPane();
+        inventoryBorderPane.setStyle("-fx-background-color: whitesmoke;");
+        inventoryBorderPane.setMinSize(800, 600);
+
+        //Create HBox that will be placed at the top of the Pane.
+        HBox topHBox = new HBox();
+        topHBox.setMinSize(800, 100);
+        topHBox.setMaxSize(800, 100);
+
+        //Child HBox to add Padding to HBox.
+        HBox leftPaddingHBox = new HBox();
+        leftPaddingHBox.setMinSize(300, 100);
+        leftPaddingHBox.setMaxSize(300, 100);
+
+        //HBox for the controls. Added last to topHBox.
+        HBox controlsHBox = controlsHBox(root, inventoryBorderPane);
+        topHBox.getChildren().addAll(leftPaddingHBox,controlsHBox);
+        inventoryBorderPane.setTop(topHBox);
+
+
+        HBox bottomHBox = new HBox();
+        bottomHBox.setMinSize(800, 100);
+        bottomHBox.setMaxSize(800, 100);
+        ToggleGroup inventoryToggleGroup = new ToggleGroup();
+        ToggleButton listOptionButton = new ToggleButton("List");
+        ToggleButton editOptionButton = new ToggleButton("Edit");
+        listOptionButton.setToggleGroup(inventoryToggleGroup);
+        editOptionButton.setToggleGroup(inventoryToggleGroup);
+        inventoryToggleGroup.selectToggle(listOptionButton);
+        BorderPane inventoryToggleBox = toggleBox(listOptionButton,editOptionButton);
+        bottomHBox.getChildren().add(inventoryToggleBox);
+        bottomHBox.setAlignment(Pos.BASELINE_CENTER);
+        bottomHBox.setTranslateY(21);
+        inventoryBorderPane.setBottom(bottomHBox);
+
+        root.getChildren().addAll(inventoryBorderPane);
+
     }
 
+    //Creates the history screen.
+    private void historyBorderPane(AnchorPane root){
+        BorderPane historyBorderPane = new BorderPane();
+        historyBorderPane.setStyle("-fx-background-color: whitesmoke;");
+        historyBorderPane.setMinSize(800, 600);
+
+
+        HBox bottomHBox = new HBox();
+        bottomHBox.setMinSize(800, 100);
+        bottomHBox.setMaxSize(800, 100);
+        ToggleGroup historyToggleGroup = new ToggleGroup();
+        ToggleButton pastTransactionsButton = new ToggleButton("Past Transactions");
+        ToggleButton profitTrackerButton = new ToggleButton("Profit Tracker");
+        pastTransactionsButton.setToggleGroup(historyToggleGroup);
+        profitTrackerButton.setToggleGroup(historyToggleGroup);
+        historyToggleGroup.selectToggle(pastTransactionsButton);
+        BorderPane historyToggleBox = toggleBox(pastTransactionsButton, profitTrackerButton);
+        bottomHBox.getChildren().add(historyToggleBox);
+        bottomHBox.setAlignment(Pos.BASELINE_CENTER);
+        bottomHBox.setTranslateY(21);
+        historyBorderPane.setBottom(bottomHBox);
+
+        root.getChildren().add(historyBorderPane);
+
+    }
+
+    //Creates the sell screen.
+    private void sellBorderPane(AnchorPane root){
+        //Create Border Pane.
+        BorderPane sellBorderPane = new BorderPane();
+        sellBorderPane.setStyle("-fx-background-color: whitesmoke");
+        sellBorderPane.setMinSize(800, 600);
+        sellBorderPane.setMaxSize(800, 600);
+
+        //Create HBox that will be placed at the top of the Pane.
+        HBox topHBox = new HBox();
+        topHBox.setMinSize(800, 100);
+        topHBox.setMaxSize(800, 100);
+
+        //Child HBox to add Padding to HBox.
+        HBox leftPaddingHBox = new HBox();
+        leftPaddingHBox.setMinSize(150, 100);
+        leftPaddingHBox.setMaxSize(150, 100);
+
+        //Combo button HBox holder. Child to topHBox
+        HBox combobuttonHBox = new HBox();
+        combobuttonHBox.setMinSize(500, 100);
+        combobuttonHBox.setMaxSize(500, 100);
+        combobuttonHBox.setSpacing(80);
+        combobuttonHBox.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        ComboBox<String> sellComboBox = comboBoxTemplate();
+        combobuttonHBox.getChildren().addAll(sellComboBox);
+
+
+        sellComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("Selected item: " + observable);
+            System.out.println("Selected item: " + oldValue);
+            System.out.println("Selected item: " + newValue);
+
+        });
+
+        combobuttonHBox.setAlignment(Pos.CENTER);
+
+        //HBox for the controls. Added last to topHBox.
+        HBox controlsHBox = controlsHBox(root, sellBorderPane);
+        topHBox.getChildren().addAll(leftPaddingHBox,combobuttonHBox, controlsHBox);
+        sellBorderPane.setTop(topHBox);
+
+        root.getChildren().add(sellBorderPane);
+    }
+    
     @Override//Override the start method in the Application class
     public void start(Stage primaryStage){
 
         //Create root anchor pane
-        StackPane root = new StackPane();
-
-        //Instantiate a navigation drawer, hamburger menu, and card images.
-        VBox navigationMenu = navigationMenu(root);
-        Shape hamburgerIcon = hamburgerIcon(navigationMenu);
-        Shape sellIcon = sellIcon();
-        Shape searchIcon = searchIcon();
-        Shape historyIcon = historyIcon();
-        Shape inventoryIcon = inventoryIcon();
+        AnchorPane root = new AnchorPane();
 
         //Create VBox home pane.
         VBox homePane = new VBox();
@@ -446,10 +506,10 @@ public class CarLotFx extends Application {
         gridPane.setPadding(new Insets(90));
 
         //Create home pane cards.
-        VBox sellCard = card("Sell", sellIcon);
-        VBox inventoryCard = card("Inventory", inventoryIcon);
-        VBox compareCard = card("Compare", searchIcon);
-        VBox historyCard = card("History",historyIcon);
+        VBox sellCard = menuCard("Sell", sellIcon());
+        VBox inventoryCard = menuCard("Inventory", searchIcon());
+        VBox compareCard = menuCard("Compare", comparisonIcon());
+        VBox historyCard = menuCard("History",historyIcon());
 
         //Add cards to grid pane.
         gridPane.add(sellCard, 0, 0);
@@ -457,26 +517,57 @@ public class CarLotFx extends Application {
         gridPane.add(inventoryCard, 0, 1 );
         gridPane.add(historyCard, 1,1);
 
-        //Define button and card on click behaviour to display new Vbox.
-        sellCard.setOnMouseClicked(e -> sellBorderPane(root, hamburgerIcon, navigationMenu));
-        compareCard.setOnMouseClicked(e -> compareBorderPane(root, hamburgerIcon, navigationMenu));
-        inventoryCard.setOnMouseClicked(e -> inventoryBorderPane(root, hamburgerIcon, navigationMenu));
-        historyCard.setOnMouseClicked(e -> historyBorderPane(root, hamburgerIcon, navigationMenu));
-
         //Add the navigation menu to the anchor pane.
         homePane.getChildren().add(gridPane);
-        root.getChildren().addAll(homePane, navigationMenu, hamburgerIcon);
 
-        //Anchor the navigation menu to the left.
-        StackPane.setAlignment(navigationMenu, Pos.BASELINE_LEFT);
-        StackPane.setAlignment(hamburgerIcon,Pos.TOP_LEFT);
+        //Instantiate a navigation drawer, hamburger menu, and card images.
+        VBox navigationMenu = new VBox();
+        navigationMenu.setStyle("-fx-background-color: #333; -fx-background-radius: 10;");
+        navigationMenu.setVisible(false);
+        navigationMenu.setPrefWidth(180);
+        navigationMenu.setPrefHeight(600);
+        navigationMenu.setAlignment(Pos.BASELINE_CENTER);
+
+        //Create and style nodes for the navigation menu
+        VBox navigationHeader = new VBox();
+        navigationHeader.setStyle("-fx-background-color: #333");
+        navigationHeader.setMinSize(40, 66);
+        navigationHeader.setMaxSize(40, 66);
+        Button compareButton = materialButton("Compare");
+        Button historyButton = materialButton("History");
+        Button inventoryButton = materialButton("Inventory");
+        Button sellButton = materialButton("Sell");
+
+        //Adds nodes to navigation object.
+        navigationMenu.getChildren().addAll(navigationHeader, sellButton,
+                inventoryButton, compareButton, historyButton);
+
+        Shape hamburgerIcon = hamburgerIcon(navigationMenu);
+        Group hamburgerGroup = new Group(hamburgerIcon);
+        hamburgerGroup.setTranslateY(34);
+        hamburgerGroup.setTranslateX(30);
+        StackPane menuStackPane= new StackPane();
+        menuStackPane.setAlignment(Pos.TOP_LEFT);
+        menuStackPane.getChildren().addAll(navigationMenu, hamburgerGroup);
+        root.getChildren().addAll(homePane, menuStackPane);
+        System.out.println(root.getChildren().size());
+
+        //Define button and card on click behaviour to display new Vbox.
+        sellButton.setOnMouseClicked(e -> {sellBorderPane(root); menuStackPane.toFront();});
+        compareButton.setOnMouseClicked(e ->  { compareBorderPane(root); menuStackPane.toFront();});
+        inventoryButton.setOnMouseClicked(e -> {inventoryBorderPane(root); menuStackPane.toFront();});
+        historyButton.setOnMouseClicked(e -> { historyBorderPane(root); menuStackPane.toFront();});
+        sellCard.setOnMouseClicked(e -> {sellBorderPane(root); menuStackPane.toFront();});
+        compareCard.setOnMouseClicked(e -> {compareBorderPane(root); menuStackPane.toFront();} );
+        inventoryCard.setOnMouseClicked(e -> {inventoryBorderPane(root); menuStackPane.toFront();});
+        historyCard.setOnMouseClicked(e -> {historyBorderPane(root); menuStackPane.toFront();});
 
         //Create and show the primary scene.
         primaryStage.setTitle("Car Lot Application - Team #3");
         Scene primaryScene = new Scene(root, 800,600);
         primaryStage.setScene(primaryScene);
         primaryStage.show();
-
+        
     }
 
     //Main
