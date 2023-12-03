@@ -1,6 +1,106 @@
+.button{
+    -fx-text-fill: white ;
+    -fx-background-color: #333;
+    -fx-min-height: 40;
+    -fx-min-width: 150;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-border-width: 2;
+}
+
+.button:hover {
+    -fx-background-color: #999;
+}
+
+.button:pressed {
+    -fx-background-color: #003b5c;
+}
+
+.combo-box{
+    -fx-background-color: whitesmoke;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-border-width: 1;
+    -fx-border-color: #333;
+    -fx-font-size: 14;
+    -fx-text-fill: #333;
+}
+.combo-box .text-field{
+    -fx-border-width: 2;
+    -fx-background-color: whitesmoke;
+}
+.combo-box .arrow{
+    -fx-background-color: #333;
+}
+.combo-box .arrow-button{
+    -fx-background-color: whitesmoke;
+    -fx-border-style: none;
+}
+.combo-box .arrow-button{
+    -fx-background-color: whitesmoke;
+}
+
+.combo-box .list-view {
+    -fx-border-color: #333;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-border-width: 1;
+    -fx-effect: null;
+}
+
+.combo-box .list-cell {
+    -fx-background-color: whitesmoke;
+    -fx-padding: 10 20;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #bfc8ca;
+}
+
+ .combo-box .scroll-bar:vertical {
+    -fx-pref-width: 8;
+ }
+
+.combo-box .scroll-bar .thumb {
+    -fx-background-color: #333;
+}
+
+.combo-box .scroll-bar .track {
+    -fx-background-color: whitesmoke;
+}
+
+.combo-box .scroll-bar .decrement-arrow {
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+}
+
+.combo-box .scroll-bar .decrement-button {
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+ ;
+
+}
+.combo-box .scroll-bar .increment-arrow {
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+}
+
+.combo-box .scroll-bar .increment-button {
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+}
+
+
+.menu-card{
+    -fx-background-color: #fff;
+    -fx-border-color: #1a1c1e;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+}
 .stat-card{
     -fx-background-color: #ffffff;
-    -fx-border-color: #cccccc;
+    -fx-border-color: #333;
     -fx-background-radius: 5;
     -fx-border-radius: 5;
 }
