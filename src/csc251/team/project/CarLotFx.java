@@ -1,26 +1,55 @@
 package csc251.team.project;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static javafx.collections.FXCollections.observableArrayList;
 
 public class CarLotFx extends Application {
 
+    private CarDAO model;
+
     //Shapes
+
+    private Shape carIcon(){
+        SVGPath carIcon = new SVGPath();
+        carIcon.setContent("M240-200v40q0 17-11.5 28.5T200-120h-40q-17 0-28.5-11.5T120-160v-320l84-240q6-18 " +
+                "21.5-29t34.5-11h440q19 0 34.5 11t21.5 29l84 240v320q0 17-11.5 28.5T800-120h-40q-17 " +
+                "0-28.5-11.5T720-160v-40H240Zm-8-360h496l-42-120H274l-42 120Zm-32 80v200-200Zm100 160q25 0 " +
+                "42.5-17.5T360-380q0-25-17.5-42.5T300-440q-25 0-42.5 17.5T240-380q0 25 17.5 42.5T300-320Zm360 0q25 " +
+                "0 42.5-17.5T720-380q0-25-17.5-42.5T660-440q-25 0-42.5 17.5T600-380q0 25 17.5 42.5T660-320Zm-460 " +
+                "40h560v-200H200v200Z");
+        carIcon.setFill(Color.web("#003351"));
+        carIcon.setScaleX(0.15);
+        carIcon.setScaleY(0.15);
+
+        return carIcon;
+    }
+
     //Creates a hamburger icon for navigation.
     private Shape hamburgerIcon(VBox navigationMenu){
         SVGPath hamburgerIcon = new SVGPath();
         hamburgerIcon.setContent("M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z");
-        hamburgerIcon.setFill(Color.web("#00b5e2"));
+        hamburgerIcon.setFill(Color.web("#187DB9"));
         hamburgerIcon.setScaleX(0.05);
         hamburgerIcon.setScaleY(0.05);
 
@@ -191,15 +220,16 @@ public class CarLotFx extends Application {
         return menuCard ;
     }
 
+
     //Creates card for best section.
-    private StackPane bestCard(String str, Shape icon){
+    private StackPane bestCard(String str, Shape icon, Car car){
         //Style the Stack Pane which will hold an vbox for text and image.
         StackPane card = new StackPane();
         card.setAlignment(Pos.CENTER);
         card.setPadding(new Insets(10));
-        card.setMaxSize(200, 350);
-        card.setMinSize(200, 350);
-        card.getStylesheets().add("/Resources/ControlStyle.css");
+        card.setMaxSize(200, 310);
+        card.setMinSize(200, 310);
+        card.getStylesheets().add("csc251/team/project/ControlStyle.css");
         card.getStyleClass().add("stat-card");
 
         //Set image VBox attributes.
@@ -207,12 +237,11 @@ public class CarLotFx extends Application {
         imageVBox.setAlignment(Pos.CENTER);
         Group imageGroup = new Group();
         imageGroup.getChildren().add(icon);
-        imageGroup.setTranslateY(-100);
         imageVBox.getChildren().add(imageGroup);
 
         //Set text Vbox attributes.
-        VBox textVBox = new VBox();
-        textVBox.setAlignment(Pos.CENTER);
+        VBox titleVBox = new VBox();
+        titleVBox.setAlignment(Pos.CENTER);
         Font cardFont = Font.font("San Francisco", FontWeight.EXTRA_BOLD, 24);
         Label titleLabel = new Label(str);
         titleLabel.setFont(cardFont);
@@ -220,15 +249,57 @@ public class CarLotFx extends Application {
         line.setStroke(Color.web("#333"));
         line.setStrokeLineCap(StrokeLineCap.SQUARE);
         line.setScaleX(160);
-        textVBox.getChildren().addAll(titleLabel, line);
-        textVBox.setSpacing(10);
+        titleVBox.getChildren().addAll(titleLabel, line);
+
+        VBox contentVBox = new VBox();
+        contentVBox.setMaxSize(160, 120);
+        contentVBox.setMinSize(160, 120);
+        HBox carIdHBox =  bestLabelHBox("ID:", car.getId());
+        HBox milesHBox =  bestLabelHBox("Mileage:", "" + car.getMileage());
+        HBox mpgHBox =  bestLabelHBox("MPG:" , "" + car.getMpg());
+        HBox priceHBox =  bestLabelHBox("Price:", "$" + Math.round(car.getSalesPrice()));
+        contentVBox.getChildren().addAll(carIdHBox, milesHBox, mpgHBox,priceHBox);
+        contentVBox.setAlignment(Pos.BOTTOM_CENTER);
 
         //Add the text and image vboxes to  the stack pane
-        card.getChildren().addAll(textVBox, imageVBox);
+        card.setAlignment(Pos.CENTER);
+        card.getChildren().addAll(titleVBox, imageVBox);
+        titleVBox.setTranslateY(-20);
+        imageVBox.setTranslateY(-100);
+        card.setAlignment(Pos.BOTTOM_CENTER);
+        card.getChildren().add(contentVBox);
 
         return card;
-
     }
+
+    private HBox bestLabelHBox(String str, String str2){
+        //Create main content HBox
+        HBox contentHBox = new HBox();
+        contentHBox.setMaxSize(160, 30);
+        contentHBox.setMinSize(160, 30);
+
+        //Create and Style Labels
+        Font labelFont = Font.font("San Francisco", FontWeight.EXTRA_BOLD, 18);
+
+        Label titleLabel =  new Label(str);
+        titleLabel.setFont(labelFont);
+        Label dataLabel = new Label(str2);
+        dataLabel.setFont(labelFont);
+
+        //Add Labels to HBox node.
+        HBox leftHbox = new HBox(titleLabel);
+        leftHbox.setMaxSize(80, 50);
+        leftHbox.setMinSize(80, 50);
+        HBox rightHBox = new HBox(dataLabel);
+        rightHBox.setMaxSize(80, 50);
+        rightHBox.setMinSize(80, 50);
+        rightHBox.setAlignment(Pos.BASELINE_RIGHT);
+
+        //Add right and left HBox to contentHBox
+        contentHBox.getChildren().addAll(leftHbox,rightHBox);
+
+        return contentHBox;
+    };
 
     private HBox controlsHBox(AnchorPane root, BorderPane borderPane){
         HBox controlsHBox = new HBox();
@@ -249,21 +320,178 @@ public class CarLotFx extends Application {
         return controlsHBox;
     }
 
-    private ComboBox<String> comboBoxTemplate( ){
+    private ComboBox<String> comboBoxTemplate(CarDAO model){
         final ComboBox<String> comboBox = new ComboBox<String>();
         comboBox.setMinSize(180, 40);
         comboBox.setMaxSize(180, 40);
         comboBox.setEditable(true);
-        comboBox.getStylesheets().add("/Resources/ControlStyle.css");
+        comboBox.setPromptText("Select All boxes");
+        comboBox.getStylesheets().add("csc251/team/project/ControlStyle.css");
         comboBox.getStyleClass().add("combo-box");
 
+        List<Car> inventory = model.getInventory();
+
+        List<String> carIds = inventory.stream()
+                .map(Car::getId)
+                .collect(Collectors.toList());
+
+        ObservableList<String> options = observableArrayList(carIds);
+        comboBox.setItems(options);
+
         return comboBox;
+    }
+
+    private ComboBox<String> formComboBoxTemplate(CarDAO model){
+        final ComboBox<String> comboBox = new ComboBox<String>();
+        comboBox.setMinSize(180, 40);
+        comboBox.setMaxSize(180, 40);
+        comboBox.setEditable(true);
+        comboBox.setPromptText("Select All boxes");
+        comboBox.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        comboBox.getStyleClass().add("combo-box");
+
+        List<Car> inventory = model.getSalesHistory();
+
+        List<String> carIds = inventory.stream()
+                .map(Car::getId)
+                .collect(Collectors.toList());
+
+        ObservableList<String> options = observableArrayList(carIds);
+        comboBox.setItems(options);
+
+        return comboBox;
+    }
+
+
+    private HBox purchaseLabelHBox(String str, String str2){
+        //Create main content HBox
+        HBox contentHBox = new HBox();
+        contentHBox.setMaxSize(200, 50);
+        contentHBox.setMinSize(200, 50);
+
+        //Create and Style Labels
+        Font labelFont = Font.font("San Francisco", FontWeight.EXTRA_BOLD, 18);
+
+        Label titleLabel =  new Label(str);
+        titleLabel.setFont(labelFont);
+        Label dataLabel = new Label(str2);
+        dataLabel.setFont(labelFont);
+
+
+        //Add Labels to HBox node.
+        HBox leftHbox = new HBox(titleLabel);
+        leftHbox.setMaxSize(100, 50);
+        leftHbox.setMinSize(100, 50);
+        leftHbox.setAlignment(Pos.BOTTOM_LEFT);
+        HBox rightHBox = new HBox(dataLabel);
+        rightHBox.setMaxSize(100, 50);
+        rightHBox.setMinSize(100, 50);
+        rightHBox.setAlignment(Pos.BOTTOM_RIGHT);
+
+        //Add right and left HBox to contentHBox
+        contentHBox.getChildren().addAll(leftHbox,rightHBox);
+
+        return contentHBox;
+    };
+
+    private VBox purchaseCard(Car car, CarDAO model, AnchorPane root, BorderPane borderPane){
+        //Create VBox Container.
+        VBox purchaseCard = new VBox();
+        purchaseCard.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        purchaseCard.getStyleClass().add("purchase-card");
+        purchaseCard.setMaxSize(340, 440);
+        purchaseCard.setMinSize(340, 440);
+        purchaseCard.setTranslateY(-20);
+        purchaseCard.setAlignment(Pos.CENTER);
+        purchaseCard.setSpacing(20);
+
+        //Create car Icon and line.
+        Shape carIcon = carIcon();
+        Group carImageGroup = new Group(carIcon);
+        purchaseCard.getChildren().addAll(carImageGroup);
+
+        //Create Label VBox.
+        VBox contentVBox = new VBox();
+        contentVBox.setMaxSize(200, 200);
+        contentVBox.setMinSize(200, 200);
+        HBox carIdHBox = purchaseLabelHBox("ID:", car.getId());
+        HBox milesHBox = purchaseLabelHBox("Mileage:", "" + car.getMileage());
+        HBox mpgHBox = purchaseLabelHBox("MPG:", "" + car.getMpg());
+        HBox priceHBox = purchaseLabelHBox("Price:", " $" + Math.round(car.getSalesPrice()) );
+        contentVBox.getChildren().addAll(carIdHBox, milesHBox,mpgHBox,priceHBox);
+        purchaseCard.getChildren().add(contentVBox);
+
+        //Create Line
+        Line line = new Line();
+        line.setStroke(Color.web("#333"));
+        line.setStrokeLineCap(StrokeLineCap.SQUARE);
+        line.setScaleX(200);
+
+        //Create confirmation button and add it to vbox.
+        Button confirmationButton = new Button("Confirm Purchase");
+        confirmationButton.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        confirmationButton.getStyleClass().add("confirmation-button");
+        confirmationButton.setMaxSize(200, 60);
+        confirmationButton.setMinSize(200, 60);
+        purchaseCard.getChildren().addAll(line, confirmationButton);
+
+        confirmationButton.setOnMouseClicked(e -> {model.sellCar(car.getId(), ((float)car.getSalesPrice()));
+            root.getChildren().remove(borderPane);
+        });
+
+        return purchaseCard;
+    }
+
+    private TableView<Car> customerTableView(){
+        TableView<Car> table = new TableView<>();
+        TableColumn<Car, String> idColumn = new TableColumn<>("CarId");
+        idColumn.setCellValueFactory(new PropertyValueFactory<Car, String>("id"));
+        TableColumn<Car, Integer> mileageColumn = new TableColumn<>("Mileage");
+        mileageColumn.setCellValueFactory(new PropertyValueFactory<Car, Integer>("mileage"));
+        TableColumn<Car,Integer> mpgColumn = new TableColumn<>("Mpg");
+        mpgColumn.setCellValueFactory(new PropertyValueFactory<Car, Integer>("mpg"));
+        TableColumn<Car, Double> salesPriceColumn = new TableColumn<>("Sales Price");
+        salesPriceColumn.setCellValueFactory(new PropertyValueFactory<Car, Double>("salesPrice"));
+        table.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        table.getStyleClass().add("table-view");
+        table.setMaxSize(400, 300);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.getColumns().addAll(idColumn, mileageColumn, mpgColumn, salesPriceColumn);
+
+        return table;
+    }
+
+    private TableView<Car> historyTableView(){
+        TableView<Car> table = new TableView<>();
+        TableColumn<Car, String> idColumn = new TableColumn<>("CarId");
+        idColumn.setCellValueFactory(new PropertyValueFactory<Car, String>("id"));
+        TableColumn<Car, Integer> mileageColumn = new TableColumn<>("Mileage");
+        mileageColumn.setCellValueFactory(new PropertyValueFactory<Car, Integer>("mileage"));
+        TableColumn<Car,Integer> mpgColumn = new TableColumn<>("Mpg");
+        mpgColumn.setCellValueFactory(new PropertyValueFactory<Car, Integer>("mpg"));
+        TableColumn<Car, Double> costPriceColumn = new TableColumn<>("Cost");
+        costPriceColumn.setCellValueFactory(new PropertyValueFactory<Car, Double>("cost"));
+        TableColumn<Car, Double> salesPriceColumn = new TableColumn<>("Sales Price");
+        salesPriceColumn.setCellValueFactory(new PropertyValueFactory<Car, Double>("salesPrice"));
+        TableColumn<Car, String> soldColumn = new TableColumn<>("Sold");
+        soldColumn.setCellValueFactory(new PropertyValueFactory<Car, String>("sold"));
+        TableColumn<Car, String> priceSoldColumn = new TableColumn<>("PriceSold");
+        priceSoldColumn.setCellValueFactory(new PropertyValueFactory<Car, String>("PriceSold"));
+        table.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        table.getStyleClass().add("table-view");
+        table.setMinSize(700, 300);
+        table.setMaxSize(700, 300);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.getColumns().addAll(idColumn, mileageColumn, mpgColumn, costPriceColumn,
+                salesPriceColumn, soldColumn, priceSoldColumn);
+
+        return table;
     }
 
     private BorderPane toggleBox(ToggleButton... buttons){
         //Create Border Pane for button
         BorderPane toggleButtonBox= new BorderPane();
-        toggleButtonBox.getStylesheets().add("/Resources/ControlStyle.css");
+        toggleButtonBox.getStylesheets().add("csc251/team/project/ControlStyle.css");
         toggleButtonBox.getStyleClass().add("toggle-box");
         buttons[0].getStyleClass().add("toggle-button");
         buttons[1].getStyleClass().add("toggle-button");
@@ -271,12 +499,33 @@ public class CarLotFx extends Application {
         toggleButtonBox.setLeft(buttons[0]);
         toggleButtonBox.setCenter(null);
         toggleButtonBox.setRight(buttons[1]);
-        toggleButtonBox.setMinSize(60, 400);
-        toggleButtonBox.setMaxSize(60, 400);
+        toggleButtonBox.setMinSize(50, 400);
+        toggleButtonBox.setMaxSize(50, 400);
         BorderPane.setAlignment(buttons[0], Pos.CENTER);
         BorderPane.setAlignment(buttons[1], Pos.CENTER);
 
         return toggleButtonBox;
+    }
+
+    private BorderPane formToggleBox(ToggleButton... buttons){
+        //Create Border Pane for button
+        BorderPane formToggleBox= new BorderPane();
+        formToggleBox.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        formToggleBox.getStyleClass().add("segmented-button-bar");
+        buttons[0].setMaxSize(100,40);
+        buttons[1].setMaxSize(100,40);
+        buttons[2].setMaxSize(100,40);
+
+        formToggleBox.setLeft(buttons[0]);
+        formToggleBox.setCenter(buttons[1]);
+        formToggleBox.setRight(buttons[2]);
+        formToggleBox.setMinSize(300, 40);
+        formToggleBox.setMaxSize(300, 40);
+        BorderPane.setAlignment(buttons[0], Pos.CENTER);
+        BorderPane.setAlignment(buttons[1], Pos.CENTER);
+        BorderPane.setAlignment(buttons[2], Pos.CENTER);
+
+        return formToggleBox;
     }
 
     private void returnHome(AnchorPane root) {
@@ -288,8 +537,282 @@ public class CarLotFx extends Application {
         }
     }
 
+    private Boolean validateSelection(ComboBox<String> comboBox, CarDAO model){
+        List<String> carIds = model.getInventory().stream()
+                .map(Car::getId)
+                .toList();
+
+        return carIds.contains(comboBox.getValue());
+    }
+
+    private Boolean validateSelectionTextField(String str, CarDAO model){
+        return model.getInventory().stream()
+                .anyMatch(car -> car.toString().contains(str));
+    }
+
+    private Boolean validateSoldSelection(ComboBox<String> comboBox, CarDAO model){
+        List<String> carIds = model.getSalesHistory().stream()
+                .map(Car::getId)
+                .toList();
+
+        return carIds.contains(comboBox.getValue());
+    }
+
+    private Boolean validateSoldSelectionTextField(String str, CarDAO model){
+        return  model.getSalesHistory().stream()
+                .anyMatch(car -> car.toString().contains(str));
+    }
+
+    private Boolean checkValues(String id, String mileage, String mpg, String salesPrice, String cost) {
+
+        try {
+            Boolean idCheck = id instanceof String && !id.isEmpty();
+            Integer mileageCheck = Integer.parseInt(mileage);
+            Integer mpgCheck = Integer.parseInt(mpg);
+            Double salesPriceCheck = Double.parseDouble(salesPrice);
+            Double costCheck = Double.parseDouble(cost);
+            return true;
+        } catch (NumberFormatException exception) {
+            return false;
+        }
+    }
+
+    private Boolean checkSoldValues(String id, String mileage, String mpg, String salesPrice, String cost,
+                                    String sold, String priceSold) {
+
+        try {
+            Boolean idCheck = id instanceof String && !id.isEmpty();
+            Integer mileageCheck = Integer.parseInt(mileage);
+            Integer mpgCheck = Integer.parseInt(mpg);
+            Double salesPriceCheck = Double.parseDouble(salesPrice);
+            Double costCheck = Double.parseDouble(cost);
+            Boolean soldCheck = Boolean.parseBoolean(sold);
+            Double priceSoldCheck = Double.parseDouble(priceSold);
+
+            return true;
+        } catch (NumberFormatException exception) {
+            return false;
+        }
+    }
+
+
+    private VBox formVBox(ComboBox<String> comboBox, CarDAO model){
+        VBox fieldsVBox = new VBox();
+        fieldsVBox.setMaxSize(400, 300);
+        fieldsVBox.setMinSize(400, 300);
+        fieldsVBox.setAlignment(Pos.CENTER);
+        fieldsVBox.setSpacing(20);
+
+        ToggleGroup formToggleGroup = new ToggleGroup();
+        ToggleButton addButton = new ToggleButton("Add");
+        ToggleButton editButton = new ToggleButton("Edit");
+        ToggleButton removeButton = new ToggleButton("Remove");
+        addButton.setToggleGroup(formToggleGroup);
+        editButton.setToggleGroup(formToggleGroup);
+        removeButton.setToggleGroup(formToggleGroup);
+        formToggleGroup.selectToggle(addButton);
+        BorderPane compareToggleBox = formToggleBox(addButton, editButton, removeButton);
+
+        TextField idTextField = new TextField();
+        idTextField.setPromptText("Enter Car Id");
+        idTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        idTextField.getStyleClass().add("search-field");
+        TextField mileageTextField  = new TextField();
+        mileageTextField.setPromptText("Enter Mileage");
+        mileageTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        mileageTextField.getStyleClass().add("search-field");
+        TextField mpgTextField  = new TextField();
+        mpgTextField.setPromptText("Enter MPG");
+        mpgTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        mpgTextField.getStyleClass().add("search-field");
+        TextField salesPriceTextField  = new TextField();
+        salesPriceTextField.setPromptText("Price");
+        salesPriceTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        salesPriceTextField.getStyleClass().add("search-field");
+        TextField costTextField  = new TextField();
+        costTextField.setPromptText("Price");
+        costTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        costTextField.getStyleClass().add("search-field");
+
+        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (validateSelection(comboBox, model)){
+                Car selectedCar = model.getInventory().stream()
+                        .filter(car -> car.getId().equals(comboBox.getValue()))
+                        .findFirst().get();
+
+                idTextField.setText(selectedCar.getId());
+                mileageTextField.setText(selectedCar.getMileage() + "");
+                mpgTextField.setText(selectedCar.getMpg()+ "");
+                salesPriceTextField.setText(selectedCar.getSalesPrice() + "");
+                costTextField.setText(selectedCar.getCost() + "");
+            }
+
+        });
+
+        Button savebutton = new Button("Save Changes");
+        savebutton.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        savebutton.getStyleClass().add("confirmation-button");
+        savebutton.setMaxSize(40, 300);
+
+
+        fieldsVBox.getChildren().addAll(compareToggleBox, idTextField,
+                mileageTextField, mpgTextField, salesPriceTextField, costTextField, savebutton);
+
+        savebutton.setOnMouseClicked(e -> {
+            Boolean valuesCheck = checkValues(idTextField.getText(), mileageTextField.getText(), mpgTextField.getText(),
+                    salesPriceTextField.getText(), costTextField.getText());
+            if (valuesCheck){
+                if (editButton.isSelected() && validateSelectionTextField(idTextField.getText(), model)){
+                    model.updateCar(idTextField.getText(), Integer.parseInt(mileageTextField.getText()),
+                            Integer.parseInt(mpgTextField.getText()), Double.parseDouble(salesPriceTextField.getText()),
+                            Double.parseDouble(costTextField.getText()));
+
+                } else if (removeButton.isSelected() && validateSelectionTextField(idTextField.getText(), model)){
+                    model.removeCar(idTextField.getText());
+
+                } else{
+                    Car newcar = new Car(idTextField.getText(), Integer.parseInt(mileageTextField.getText()),
+                            Integer.parseInt(mpgTextField.getText()), Double.parseDouble(salesPriceTextField.getText()),
+                            Double.parseDouble(costTextField.getText()));
+                    model.addCarToLot(newcar);
+                }
+            }
+
+        });
+
+        return fieldsVBox;
+
+    }
+
+    private VBox historyFormVBox(ComboBox<String> comboBox, CarDAO model){
+        VBox fieldsVBox = new VBox();
+        fieldsVBox.setMaxSize(400, 300);
+        fieldsVBox.setMinSize(400, 300);
+        fieldsVBox.setAlignment(Pos.CENTER);
+        fieldsVBox.setSpacing(10);
+
+        ToggleGroup formToggleGroup = new ToggleGroup();
+        ToggleButton addButton = new ToggleButton("Add");
+        ToggleButton editButton = new ToggleButton("Edit");
+        ToggleButton removeButton = new ToggleButton("Remove");
+        addButton.setToggleGroup(formToggleGroup);
+        editButton.setToggleGroup(formToggleGroup);
+        removeButton.setToggleGroup(formToggleGroup);
+        formToggleGroup.selectToggle(addButton);
+        BorderPane compareToggleBox = formToggleBox(addButton, editButton, removeButton);
+
+        TextField idTextField = new TextField();
+        idTextField.setPromptText("Enter Car Id");
+        idTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        idTextField.getStyleClass().add("search-field");
+        TextField mileageTextField  = new TextField();
+        mileageTextField.setPromptText("Enter Mileage");
+        mileageTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        mileageTextField.getStyleClass().add("search-field");
+        TextField mpgTextField  = new TextField();
+        mpgTextField.setPromptText("Enter MPG");
+        mpgTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        mpgTextField.getStyleClass().add("search-field");
+        TextField costTextField  = new TextField();
+        costTextField.setPromptText("Cost Price");
+        costTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        costTextField.getStyleClass().add("search-field");
+        TextField salesPriceTextField  = new TextField();
+        salesPriceTextField.setPromptText("Sales Price");
+        salesPriceTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        salesPriceTextField.getStyleClass().add("search-field");
+        TextField soldTextField  = new TextField();
+        soldTextField.setPromptText("Sold - true. Unsold False");
+        soldTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        soldTextField.getStyleClass().add("search-field");
+        TextField priceSoldTextField  = new TextField();
+        priceSoldTextField.setPromptText("Enter Price Sold");
+        priceSoldTextField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        priceSoldTextField.getStyleClass().add("search-field");
+
+        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (validateSoldSelection(comboBox, model)){
+                Car selectedCar = model.getSalesHistory().stream()
+                        .filter(car -> car.getId().equals(comboBox.getValue()))
+                        .findFirst().get();
+
+                idTextField.setText(selectedCar.getId());
+                mileageTextField.setText(selectedCar.getMileage() + "");
+                mpgTextField.setText(selectedCar.getMpg()+ "");
+                costTextField.setText(selectedCar.getCost() + "");
+                salesPriceTextField.setText(selectedCar.getSalesPrice() + "");
+                soldTextField.setText(selectedCar.isSold() + "");
+                priceSoldTextField.setText(selectedCar.getPriceSold() + "");
+            }
+
+        });
+
+        Button savebutton = new Button("Save Changes");
+        savebutton.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        savebutton.getStyleClass().add("confirmation-button");
+        savebutton.setMaxSize(40, 300);
+
+        HBox firstHBox = new HBox();
+        firstHBox.setSpacing(40);
+        firstHBox.setAlignment(Pos.BOTTOM_CENTER);
+        firstHBox.setMaxSize(400, 60);
+        firstHBox.setMinSize(400, 60);
+        HBox secondHBox = new HBox();
+        secondHBox.setMaxSize(400, 60);
+        secondHBox.setMinSize(400, 60);
+        secondHBox.setSpacing(40);
+        secondHBox.setAlignment(Pos.BOTTOM_CENTER);
+        HBox thirdHBox = new HBox();
+        thirdHBox.setMaxSize(400, 60);
+        thirdHBox.setMinSize(400, 60);
+        thirdHBox.setSpacing(40);
+        thirdHBox.setAlignment(Pos.BOTTOM_CENTER);
+        HBox fourthHBox = new HBox();
+        fourthHBox.setMaxSize(400, 60);
+        fourthHBox.setMinSize(400, 60);
+        fourthHBox.setSpacing(40);
+        fourthHBox.setAlignment(Pos.BOTTOM_CENTER);
+
+        firstHBox.getChildren().addAll(idTextField, mileageTextField);
+        secondHBox.getChildren().addAll(mpgTextField, salesPriceTextField);
+        thirdHBox.getChildren().addAll(costTextField, soldTextField);
+        fourthHBox.getChildren().addAll(priceSoldTextField, savebutton);
+
+        savebutton.setTranslateY(10);
+        fieldsVBox.getChildren().addAll(compareToggleBox,firstHBox,secondHBox,thirdHBox,fourthHBox, savebutton);
+
+        savebutton.setOnMouseClicked(e -> {
+            Boolean valuesCheck = checkSoldValues(idTextField.getText(), mileageTextField.getText(), mpgTextField.getText(),
+                    salesPriceTextField.getText(), costTextField.getText(), soldTextField.getText(),
+                    priceSoldTextField.getText());
+            if (valuesCheck){
+                if (editButton.isSelected() && validateSoldSelectionTextField(idTextField.getText(), model)){
+                    model.updateCar(idTextField.getText(), Integer.parseInt(mileageTextField.getText()),
+                            Integer.parseInt(mpgTextField.getText()), Double.parseDouble(salesPriceTextField.getText()),
+                            Double.parseDouble(costTextField.getText()), Boolean.parseBoolean(soldTextField.getText()),
+                            Double.parseDouble(priceSoldTextField.getText()));
+
+                } else if (removeButton.isSelected() && validateSoldSelectionTextField(idTextField.getText(), model)){
+                    model.removeCar(idTextField.getText());
+                } else{
+                    Car newcar = new Car(idTextField.getText(), Integer.parseInt(mileageTextField.getText()),
+                            Integer.parseInt(mpgTextField.getText()), Double.parseDouble(salesPriceTextField.getText()),
+                            Double.parseDouble(costTextField.getText()),Boolean.parseBoolean(soldTextField.getText()),
+                            Double.parseDouble(priceSoldTextField.getText()));
+                    System.out.println(newcar.toCSVString());
+                    model.addCarToLot(newcar);
+                }
+            }
+
+        });
+
+        return fieldsVBox;
+
+    }
+
+
     //Creates the compare screen.
-    private void compareBorderPane(AnchorPane root){
+    private void compareBorderPane(AnchorPane root, CarDAO model){
         //Create Border Pane.
         BorderPane compareBorderPane = new BorderPane();
         compareBorderPane.setStyle("-fx-background-color: whitesmoke");
@@ -311,12 +834,12 @@ public class CarLotFx extends Application {
         combobuttonHBox.setMinSize(500, 100);
         combobuttonHBox.setMaxSize(500, 100);
         combobuttonHBox.setSpacing(80);
-        combobuttonHBox.getStylesheets().add("/Resources/ControlStyle.css");
-       
+        combobuttonHBox.getStylesheets().add("csc251/team/project/ControlStyle.css");
+
         //Create Combo Buttons
-        ComboBox<String> firstComboBox = comboBoxTemplate();
-        ComboBox<String> secondComboBox = comboBoxTemplate();
-        
+        ComboBox<String> firstComboBox = comboBoxTemplate(model);
+        ComboBox<String> secondComboBox = comboBoxTemplate(model);
+
         combobuttonHBox.getChildren().addAll(firstComboBox, secondComboBox);
         combobuttonHBox.setAlignment(Pos.CENTER);
 
@@ -325,12 +848,10 @@ public class CarLotFx extends Application {
         topHBox.getChildren().addAll(leftPaddingHBox,combobuttonHBox, controlsHBox);
         compareBorderPane.setTop(topHBox);
 
-
         //Creates the HBox that will be assigned to the bottom.
         HBox bottomHBox = new HBox();
         bottomHBox.setMinSize(800, 100);
         bottomHBox.setMaxSize(800, 100);
-
 
         ToggleGroup compareToggleGroup = new ToggleGroup();
         ToggleButton head2headButton = new ToggleButton("Head to Head");
@@ -346,26 +867,80 @@ public class CarLotFx extends Application {
         root.getChildren().add(compareBorderPane);
 
         //Create Cards for grid pane
+        Car bestMPGCar = model.getInventory().stream()
+                .max(Comparator.comparing(Car::getMpg))
+                .get();
+
+        Car leastMilesCar = model.getInventory().stream()
+                .min(Comparator.comparing(Car::getMileage))
+                .get();
+
+        Car lowestPriceCar = model.getInventory().stream()
+                .min(Comparator.comparing(Car::getSalesPrice))
+                .get();
+
+
+        StackPane centerPane = new StackPane();
         GridPane gridPane = new GridPane();
         gridPane.setHgap(40);
+        gridPane.setMaxSize(800, 600);
         gridPane.setAlignment(Pos.CENTER);
-        gridPane.setMaxSize(700, 400);
-        StackPane bestMPGCard = bestCard("Best MPG", gasIcon());
-        StackPane minCostCard = bestCard("Most Affordable", savingsIcon());
-        StackPane minMilesCard = bestCard("Least Miles", distanceIcon());
+        StackPane bestMPGCard = bestCard("Best MPG", gasIcon(), bestMPGCar);
+        StackPane minCostCard = bestCard("Most Affordable", savingsIcon(), lowestPriceCar);
+        StackPane minMilesCard = bestCard("Least Miles", distanceIcon(), leastMilesCar);
         gridPane.add(bestMPGCard, 0, 0);
         gridPane.add(minCostCard, 1, 0);
         gridPane.add(minMilesCard, 2, 0 );
 
+        gridPane.setVisible(false);
+
+
+        //Create table
+        TableView<Car> comparisonTable = customerTableView();
+
+        firstComboBox.valueProperty().addListener((Observable, oldValue, newValue) -> {
+            if (validateSelection(firstComboBox, model) && validateSelection(secondComboBox, model) ){
+                Car firstSelectedCar = model.getInventory().stream()
+                        .filter(car -> car.getId().equals(firstComboBox.getValue()))
+                        .findFirst().get();
+
+                Car secondSelectedCar = model.getInventory().stream()
+                        .filter(car -> car.getId().equals(secondComboBox.getValue()))
+                        .findFirst().get();
+
+                comparisonTable.getItems().setAll(firstSelectedCar,secondSelectedCar);
+            }
+        });
+
+        secondComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (validateSelection(firstComboBox, model) && validateSelection(secondComboBox, model) ){
+                Car firstSelectedCar = model.getInventory().stream()
+                        .filter(car -> car.getId().equals(firstComboBox.getValue()))
+                        .findFirst().get();
+
+                Car secondSelectedCar = model.getInventory().stream()
+                        .filter(car -> car.getId().equals(secondComboBox.getValue()))
+                        .findFirst().get();
+
+                comparisonTable.getItems().setAll(firstSelectedCar,secondSelectedCar);
+            }
+        });
+
+        centerPane.getChildren().addAll(comparisonTable, gridPane);
+        compareBorderPane.setCenter(centerPane);
+
+
         //Create Cards for grid pane
         bestStatsButton.setOnMouseClicked( e -> {
-            compareBorderPane.setCenter(gridPane);
+            comparisonTable.setVisible(false);
+            gridPane.setVisible(true);
             combobuttonHBox.setVisible(false);
             bestStatsButton.setDisable(true);
             head2headButton.setDisable(false);
         });
 
         head2headButton.setOnMouseClicked( e -> {
+            comparisonTable.setVisible(true);
             combobuttonHBox.setVisible(true);
             gridPane.setVisible(false);
             head2headButton.setDisable(true);
@@ -377,10 +952,11 @@ public class CarLotFx extends Application {
     }
 
     //Creates the compare inventory screen.
-    private void inventoryBorderPane(AnchorPane root){
+    private void inventoryBorderPane(AnchorPane root, CarDAO model){
         BorderPane inventoryBorderPane = new BorderPane();
         inventoryBorderPane.setStyle("-fx-background-color: whitesmoke;");
         inventoryBorderPane.setMinSize(800, 600);
+        inventoryBorderPane.setMaxSize(800, 600);
 
         //Create HBox that will be placed at the top of the Pane.
         HBox topHBox = new HBox();
@@ -389,15 +965,65 @@ public class CarLotFx extends Application {
 
         //Child HBox to add Padding to HBox.
         HBox leftPaddingHBox = new HBox();
-        leftPaddingHBox.setMinSize(300, 100);
-        leftPaddingHBox.setMaxSize(300, 100);
+        leftPaddingHBox.setMinSize(150, 100);
+        leftPaddingHBox.setMaxSize(150, 100);
+
+        //Combo button HBox holder. Child to topHBox
+        StackPane searchHBox = new StackPane();
+        searchHBox.setAlignment(Pos.CENTER);
+        searchHBox.setMinSize(500, 100);
+        searchHBox.setMaxSize(500, 100);
+
+        //Create textfield
+        TextField searchField = new TextField();
+        searchField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        searchField.getStyleClass().add("search-field");
+        searchField.setMinSize(180, 40);
+        searchField.setMaxSize(180, 40);
+
+        //Create ComboButton
+        ComboBox<String> editComboBox = comboBoxTemplate(model);
+        editComboBox.setVisible(false);
+
+        searchHBox.getChildren().addAll(searchField, editComboBox);
 
         //HBox for the controls. Added last to topHBox.
         HBox controlsHBox = controlsHBox(root, inventoryBorderPane);
-        topHBox.getChildren().addAll(leftPaddingHBox,controlsHBox);
+        topHBox.getChildren().addAll(leftPaddingHBox,searchHBox, controlsHBox);
         inventoryBorderPane.setTop(topHBox);
 
+        //Create table
+        TableView<Car> inventoryTable = customerTableView();
+        inventoryTable.getItems().addAll(model.getInventory());
 
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (validateSelectionTextField(searchField.getText(), model) ){
+
+
+                inventoryTable.getItems().setAll(
+                        model.getInventory().stream()
+                                .filter(car -> car.toString().contains(searchField.getText()))
+                                .collect(Collectors.toList())
+                );
+            }
+        });
+
+
+        //Create Stack Pane
+        StackPane centerPane = new StackPane();
+        centerPane.setMinSize(400, 300);
+        centerPane.setMaxSize(400, 300);
+        centerPane.setAlignment(Pos.CENTER);
+
+        VBox formVbox = formVBox(editComboBox, model);
+        formVbox.setVisible(false);
+        centerPane.getChildren().addAll(inventoryTable, formVbox);
+        inventoryBorderPane.setCenter(centerPane);
+
+
+        //Create toggle Bar for bottom.
         HBox bottomHBox = new HBox();
         bottomHBox.setMinSize(800, 100);
         bottomHBox.setMaxSize(800, 100);
@@ -413,7 +1039,27 @@ public class CarLotFx extends Application {
         bottomHBox.setTranslateY(21);
         inventoryBorderPane.setBottom(bottomHBox);
 
-        root.getChildren().addAll(inventoryBorderPane);
+
+        listOptionButton.setOnMouseClicked( e -> {
+            editComboBox.setVisible(false);
+            searchField.setVisible(true);
+            formVbox.setVisible(false);
+            inventoryTable.setVisible(true);
+            listOptionButton.setDisable(true);
+            editOptionButton.setDisable(false);
+        });
+
+        editOptionButton.setOnMouseClicked( e -> {
+            editComboBox.setVisible(true);
+            searchField.setVisible(false);
+            formVbox.setVisible(true);
+            inventoryTable.setVisible(false);
+            editOptionButton.setDisable(true);
+            listOptionButton.setDisable(false);
+        });
+
+
+        root.getChildren().add(inventoryBorderPane);
 
     }
 
@@ -422,29 +1068,114 @@ public class CarLotFx extends Application {
         BorderPane historyBorderPane = new BorderPane();
         historyBorderPane.setStyle("-fx-background-color: whitesmoke;");
         historyBorderPane.setMinSize(800, 600);
+        historyBorderPane.setMaxSize(800, 600);
+
+        //Create HBox that will be placed at the top of the Pane.
+        HBox topHBox = new HBox();
+        topHBox.setMinSize(800, 100);
+        topHBox.setMaxSize(800, 100);
+
+        //Child HBox to add Padding to HBox.
+        HBox leftPaddingHBox = new HBox();
+        leftPaddingHBox.setMinSize(150, 100);
+        leftPaddingHBox.setMaxSize(150, 100);
+
+        //Combo button HBox holder. Child to topHBox
+        StackPane searchHBox = new StackPane();
+        searchHBox.setAlignment(Pos.CENTER);
+        searchHBox.setMinSize(500, 100);
+        searchHBox.setMaxSize(500, 100);
+
+        //Create textfield
+        TextField searchField = new TextField();
+        searchField.getStylesheets().add("csc251/team/project/ControlStyle.css");
+        searchField.getStyleClass().add("search-field");
+        searchField.setMinSize(180, 40);
+        searchField.setMaxSize(180, 40);
+
+        //Create ComboButton
+        ComboBox<String> editComboBox = formComboBoxTemplate(model);
+        editComboBox.setVisible(false);
+
+        searchHBox.getChildren().addAll(searchField, editComboBox);
+
+        //HBox for the controls. Added last to topHBox.
+        HBox controlsHBox = controlsHBox(root, historyBorderPane);
+        topHBox.getChildren().addAll(leftPaddingHBox,searchHBox, controlsHBox);
+        historyBorderPane.setTop(topHBox);
+
+        //Create table
+        TableView<Car> historyTable = historyTableView();
+        historyTable.getItems().addAll(model.getSalesHistory());
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (validateSoldSelectionTextField(searchField.getText(), model) ){
+
+                historyTable.getItems().setAll(
+                        model.getSalesHistory().stream()
+                                .filter(car -> car.toString().contains(searchField.getText()))
+                                .collect(Collectors.toList())
+                );
+            }
+        });
+
+        //Create Stack Pane
+        StackPane centerPane = new StackPane();
+        centerPane.setMinSize(400, 300);
+        centerPane.setMaxSize(400, 300);
+        centerPane.setAlignment(Pos.CENTER);
+
+        VBox historyFormVBox = historyFormVBox(editComboBox, model);
+        historyFormVBox.setVisible(false);
+        centerPane.getChildren().addAll(historyTable, historyFormVBox);
+        historyBorderPane.setCenter(centerPane);
 
 
+        //Create toggle Bar for bottom.
         HBox bottomHBox = new HBox();
         bottomHBox.setMinSize(800, 100);
         bottomHBox.setMaxSize(800, 100);
-        ToggleGroup historyToggleGroup = new ToggleGroup();
-        ToggleButton pastTransactionsButton = new ToggleButton("Past Transactions");
-        ToggleButton profitTrackerButton = new ToggleButton("Profit Tracker");
-        pastTransactionsButton.setToggleGroup(historyToggleGroup);
-        profitTrackerButton.setToggleGroup(historyToggleGroup);
-        historyToggleGroup.selectToggle(pastTransactionsButton);
-        BorderPane historyToggleBox = toggleBox(pastTransactionsButton, profitTrackerButton);
-        bottomHBox.getChildren().add(historyToggleBox);
+        ToggleGroup inventoryToggleGroup = new ToggleGroup();
+        ToggleButton listOptionButton = new ToggleButton("List");
+        ToggleButton editOptionButton = new ToggleButton("Edit");
+        listOptionButton.setToggleGroup(inventoryToggleGroup);
+        editOptionButton.setToggleGroup(inventoryToggleGroup);
+        inventoryToggleGroup.selectToggle(listOptionButton);
+        BorderPane inventoryToggleBox = toggleBox(listOptionButton,editOptionButton);
+        bottomHBox.getChildren().add(inventoryToggleBox);
         bottomHBox.setAlignment(Pos.BASELINE_CENTER);
         bottomHBox.setTranslateY(21);
         historyBorderPane.setBottom(bottomHBox);
+
+
+        listOptionButton.setOnMouseClicked( e -> {
+            editComboBox.setVisible(false);
+            searchField.setVisible(true);
+            historyFormVBox.setVisible(false);
+            historyTable.setVisible(true);
+            listOptionButton.setDisable(true);
+            editOptionButton.setDisable(false);
+        });
+
+        editOptionButton.setOnMouseClicked( e -> {
+            editComboBox.setVisible(true);
+            searchField.setVisible(false);
+            historyFormVBox.setVisible(true);
+            historyTable.setVisible(false);
+            editOptionButton.setDisable(true);
+            listOptionButton.setDisable(false);
+        });
+
+
 
         root.getChildren().add(historyBorderPane);
 
     }
 
     //Creates the sell screen.
-    private void sellBorderPane(AnchorPane root){
+    private void sellBorderPane(AnchorPane root, CarDAO model){
+
         //Create Border Pane.
         BorderPane sellBorderPane = new BorderPane();
         sellBorderPane.setStyle("-fx-background-color: whitesmoke");
@@ -463,33 +1194,41 @@ public class CarLotFx extends Application {
 
         //Combo button HBox holder. Child to topHBox
         HBox combobuttonHBox = new HBox();
+        combobuttonHBox.setAlignment(Pos.CENTER);
         combobuttonHBox.setMinSize(500, 100);
         combobuttonHBox.setMaxSize(500, 100);
-        combobuttonHBox.setSpacing(80);
-        combobuttonHBox.getStylesheets().add("csc251/team/project/ControlStyle.css");
-        ComboBox<String> sellComboBox = comboBoxTemplate();
+
+        //Create ComboButton
+        ComboBox<String> sellComboBox = comboBoxTemplate(model);
         combobuttonHBox.getChildren().addAll(sellComboBox);
 
-
         sellComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("Selected item: " + observable);
-            System.out.println("Selected item: " + oldValue);
-            System.out.println("Selected item: " + newValue);
+            if (validateSelection(sellComboBox, model)){
+                Car selectedCar = model.getInventory().stream()
+                        .filter(car -> car.getId().equals(sellComboBox.getValue()))
+                        .findFirst().get();
+                sellBorderPane.setCenter(purchaseCard(selectedCar, model, root, sellBorderPane));
+            }
 
         });
 
-        combobuttonHBox.setAlignment(Pos.CENTER);
 
         //HBox for the controls. Added last to topHBox.
         HBox controlsHBox = controlsHBox(root, sellBorderPane);
         topHBox.getChildren().addAll(leftPaddingHBox,combobuttonHBox, controlsHBox);
         sellBorderPane.setTop(topHBox);
 
+        //Add border pane to root.
         root.getChildren().add(sellBorderPane);
+
     }
-    
+
+
     @Override//Override the start method in the Application class
     public void start(Stage primaryStage){
+        //Initialize the database connection.
+        model = new CarDAO();
+        model.createTableIfNotExists();
 
         //Create root anchor pane
         AnchorPane root = new AnchorPane();
@@ -539,6 +1278,7 @@ public class CarLotFx extends Application {
         Button sellButton = materialButton("Sell");
 
         //Adds nodes to navigation object.
+        navigationMenu.setSpacing(1);
         navigationMenu.getChildren().addAll(navigationHeader, sellButton,
                 inventoryButton, compareButton, historyButton);
 
@@ -550,16 +1290,15 @@ public class CarLotFx extends Application {
         menuStackPane.setAlignment(Pos.TOP_LEFT);
         menuStackPane.getChildren().addAll(navigationMenu, hamburgerGroup);
         root.getChildren().addAll(homePane, menuStackPane);
-        System.out.println(root.getChildren().size());
 
         //Define button and card on click behaviour to display new Vbox.
-        sellButton.setOnMouseClicked(e -> {sellBorderPane(root); menuStackPane.toFront();});
-        compareButton.setOnMouseClicked(e ->  { compareBorderPane(root); menuStackPane.toFront();});
-        inventoryButton.setOnMouseClicked(e -> {inventoryBorderPane(root); menuStackPane.toFront();});
+        sellButton.setOnMouseClicked(e -> {sellBorderPane(root, model); menuStackPane.toFront();});
+        compareButton.setOnMouseClicked(e ->  { compareBorderPane(root, model); menuStackPane.toFront();});
+        inventoryButton.setOnMouseClicked(e -> {inventoryBorderPane(root, model); menuStackPane.toFront();});
         historyButton.setOnMouseClicked(e -> { historyBorderPane(root); menuStackPane.toFront();});
-        sellCard.setOnMouseClicked(e -> {sellBorderPane(root); menuStackPane.toFront();});
-        compareCard.setOnMouseClicked(e -> {compareBorderPane(root); menuStackPane.toFront();} );
-        inventoryCard.setOnMouseClicked(e -> {inventoryBorderPane(root); menuStackPane.toFront();});
+        sellCard.setOnMouseClicked(e -> {sellBorderPane(root, model); menuStackPane.toFront();});
+        compareCard.setOnMouseClicked(e -> {compareBorderPane(root, model); menuStackPane.toFront();} );
+        inventoryCard.setOnMouseClicked(e -> {inventoryBorderPane(root, model); menuStackPane.toFront();});
         historyCard.setOnMouseClicked(e -> {historyBorderPane(root); menuStackPane.toFront();});
 
         //Create and show the primary scene.
@@ -567,7 +1306,7 @@ public class CarLotFx extends Application {
         Scene primaryScene = new Scene(root, 800,600);
         primaryStage.setScene(primaryScene);
         primaryStage.show();
-        
+
     }
 
     //Main
